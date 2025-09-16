@@ -2,23 +2,23 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from timm.models.layers import DropPath
+
 # from ultralytics.nn.modules import Conv
 
 
 class WindowAttention(nn.Module):
-
-    def __init__(self, dim, window_size, num_heads, qkv_bias=True, qk_scale=None, attn_drop=0., proj_drop=0.):
-
+    def __init__(self, dim, window_size, num_heads, qkv_bias=True, qk_scale=None, attn_drop=0.0, proj_drop=0.0):
         super().__init__()
         self.dim = dim
         self.window_size = window_size  # Wh, Ww
         self.num_heads = num_heads
         head_dim = dim // num_heads
-        self.scale = qk_scale or head_dim ** -0.5
+        self.scale = qk_scale or head_dim**-0.5
 
         # define a parameter table of relative position bias
         self.relative_position_bias_table = nn.Parameter(
-            torch.zeros((2 * window_size[0] - 1) * (2 * window_size[1] - 1), num_heads))  # 2*Wh-1 * 2*Ww-1, nH
+            torch.zeros((2 * window_size[0] - 1) * (2 * window_size[1] - 1), num_heads)
+        )  # 2*Wh-1 * 2*Ww-1, nH
 
         # get pair-wise relative position index for each token inside the window
         coords_h = torch.arange(self.window_size[0])
@@ -38,20 +38,20 @@ class WindowAttention(nn.Module):
         self.proj = nn.Linear(dim, dim)
         self.proj_drop = nn.Dropout(proj_drop)
 
-        nn.init.normal_(self.relative_position_bias_table, std=.02)
+        nn.init.normal_(self.relative_position_bias_table, std=0.02)
         self.softmax = nn.Softmax(dim=-1)
 
     def forward(self, x, mask=None):
-
         B_, N, C = x.shape
         qkv = self.qkv(x).reshape(B_, N, 3, self.num_heads, C // self.num_heads).permute(2, 0, 3, 1, 4)
         q, k, v = qkv[0], qkv[1], qkv[2]  # make torchscript happy (cannot use tensor as tuple)
 
         q = q * self.scale
-        attn = (q @ k.transpose(-2, -1))
+        attn = q @ k.transpose(-2, -1)
 
         relative_position_bias = self.relative_position_bias_table[self.relative_position_index.view(-1)].view(
-            self.window_size[0] * self.window_size[1], self.window_size[0] * self.window_size[1], -1)  # Wh*Ww,Wh*Ww,nH
+            self.window_size[0] * self.window_size[1], self.window_size[0] * self.window_size[1], -1
+        )  # Wh*Ww,Wh*Ww,nH
         relative_position_bias = relative_position_bias.permute(2, 0, 1).contiguous()  # nH, Wh*Ww, Wh*Ww
         attn = attn + relative_position_bias.unsqueeze(0)
 
@@ -79,7 +79,7 @@ class WindowAttention(nn.Module):
 class SwinTransformer(nn.Module):
     # CSP Bottleneck https://github.com/WongKinYiu/CrossStagePartialNetworks
     def __init__(self, c1, c2, n=1, shortcut=True, g=1, e=0.5):  # ch_in, ch_out, number, shortcut, groups, expansion
-        super(SwinTransformer, self).__init__()
+        super().__init__()
         c_ = int(c2 * e)  # hidden channels
         self.cv1 = Conv(c1, c_, 1, 1)
         self.cv2 = Conv(c1, c_, 1, 1)
@@ -97,7 +97,7 @@ class SwinTransformer(nn.Module):
 class SwinTransformerB(nn.Module):
     # CSP Bottleneck https://github.com/WongKinYiu/CrossStagePartialNetworks
     def __init__(self, c1, c2, n=1, shortcut=False, g=1, e=0.5):  # ch_in, ch_out, number, shortcut, groups, expansion
-        super(SwinTransformerB, self).__init__()
+        super().__init__()
         c_ = int(c2)  # hidden channels
         self.cv1 = Conv(c1, c_, 1, 1)
         self.cv2 = Conv(c_, c_, 1, 1)
@@ -116,7 +116,7 @@ class SwinTransformerB(nn.Module):
 class SwinTransformerC(nn.Module):
     # CSP Bottleneck https://github.com/WongKinYiu/CrossStagePartialNetworks
     def __init__(self, c1, c2, n=1, shortcut=True, g=1, e=0.5):  # ch_in, ch_out, number, shortcut, groups, expansion
-        super(SwinTransformerC, self).__init__()
+        super().__init__()
         c_ = int(c2 * e)  # hidden channels
         self.cv1 = Conv(c1, c_, 1, 1)
         self.cv2 = Conv(c1, c_, 1, 1)
@@ -133,8 +133,7 @@ class SwinTransformerC(nn.Module):
 
 
 class Mlp(nn.Module):
-
-    def __init__(self, in_features, hidden_features=None, out_features=None, act_layer=nn.SiLU, drop=0.):
+    def __init__(self, in_features, hidden_features=None, out_features=None, act_layer=nn.SiLU, drop=0.0):
         super().__init__()
         out_features = out_features or in_features
         hidden_features = hidden_features or in_features
@@ -154,7 +153,7 @@ class Mlp(nn.Module):
 
 def window_partition(x, window_size):
     B, H, W, C = x.shape
-    assert H % window_size == 0, 'feature map h and w can not divide by window size'
+    assert H % window_size == 0, "feature map h and w can not divide by window size"
     x = x.view(B, H // window_size, window_size, W // window_size, window_size, C)
     windows = x.permute(0, 1, 3, 2, 4, 5).contiguous().view(-1, window_size, window_size, C)
     return windows
@@ -168,10 +167,21 @@ def window_reverse(windows, window_size, H, W):
 
 
 class SwinTransformerLayer(nn.Module):
-
-    def __init__(self, dim, num_heads, window_size=8, shift_size=0,
-                 mlp_ratio=4., qkv_bias=True, qk_scale=None, drop=0., attn_drop=0., drop_path=0.,
-                 act_layer=nn.SiLU, norm_layer=nn.LayerNorm):
+    def __init__(
+        self,
+        dim,
+        num_heads,
+        window_size=8,
+        shift_size=0,
+        mlp_ratio=4.0,
+        qkv_bias=True,
+        qk_scale=None,
+        drop=0.0,
+        attn_drop=0.0,
+        drop_path=0.0,
+        act_layer=nn.SiLU,
+        norm_layer=nn.LayerNorm,
+    ):
         super().__init__()
         self.dim = dim
         self.num_heads = num_heads
@@ -185,9 +195,15 @@ class SwinTransformerLayer(nn.Module):
         assert 0 <= self.shift_size < self.window_size, "shift_size must in 0-window_size"
         self.norm1 = norm_layer(dim)
         self.attn = WindowAttention(
-            dim, window_size=(self.window_size, self.window_size), num_heads=num_heads,
-            qkv_bias=qkv_bias, qk_scale=qk_scale, attn_drop=attn_drop, proj_drop=drop)
-        self.drop_path = DropPath(drop_path) if drop_path > 0. else nn.Identity()
+            dim,
+            window_size=(self.window_size, self.window_size),
+            num_heads=num_heads,
+            qkv_bias=qkv_bias,
+            qk_scale=qk_scale,
+            attn_drop=attn_drop,
+            proj_drop=drop,
+        )
+        self.drop_path = DropPath(drop_path) if drop_path > 0.0 else nn.Identity()
         self.norm2 = norm_layer(dim)
         mlp_hidden_dim = int(dim * mlp_ratio)
         self.mlp = Mlp(in_features=dim, hidden_features=mlp_hidden_dim, act_layer=act_layer, drop=drop)
@@ -195,12 +211,16 @@ class SwinTransformerLayer(nn.Module):
     def create_mask(self, H, W):
         # calculate attention mask for SW-MSA
         img_mask = torch.zeros((1, H, W, 1))  # 1 H W 1
-        h_slices = (slice(0, -self.window_size),
-                    slice(-self.window_size, -self.shift_size),
-                    slice(-self.shift_size, None))
-        w_slices = (slice(0, -self.window_size),
-                    slice(-self.window_size, -self.shift_size),
-                    slice(-self.shift_size, None))
+        h_slices = (
+            slice(0, -self.window_size),
+            slice(-self.window_size, -self.shift_size),
+            slice(-self.shift_size, None),
+        )
+        w_slices = (
+            slice(0, -self.window_size),
+            slice(-self.window_size, -self.shift_size),
+            slice(-self.shift_size, None),
+        )
         cnt = 0
         for h in h_slices:
             for w in w_slices:
@@ -209,7 +229,7 @@ class SwinTransformerLayer(nn.Module):
         mask_windows = window_partition(img_mask, self.window_size)  # nW, window_size, window_size, 1
         mask_windows = mask_windows.view(-1, self.window_size * self.window_size)
         attn_mask = mask_windows.unsqueeze(1) - mask_windows.unsqueeze(2)
-        attn_mask = attn_mask.masked_fill(attn_mask != 0, float(-100.0)).masked_fill(attn_mask == 0, float(0.0))
+        attn_mask = attn_mask.masked_fill(attn_mask != 0, (-100.0)).masked_fill(attn_mask == 0, 0.0)
         return attn_mask
 
     def forward(self, x):
@@ -269,9 +289,17 @@ class SwinTransformerBlock(nn.Module):
         if c1 != c2:
             self.conv = Conv(c1, c2)
         # remove input_resolution
-        self.blocks = nn.Sequential(*[SwinTransformerLayer(dim=c2, num_heads=num_heads, window_size=window_size,
-                                                           shift_size=0 if (i % 2 == 0) else window_size // 2) for i in
-                                      range(num_layers)])
+        self.blocks = nn.Sequential(
+            *[
+                SwinTransformerLayer(
+                    dim=c2,
+                    num_heads=num_heads,
+                    window_size=window_size,
+                    shift_size=0 if (i % 2 == 0) else window_size // 2,
+                )
+                for i in range(num_layers)
+            ]
+        )
 
     def forward(self, x):
         if self.conv is not None:
