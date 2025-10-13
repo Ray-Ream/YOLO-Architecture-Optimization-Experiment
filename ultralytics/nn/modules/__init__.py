@@ -17,6 +17,8 @@ Examples:
     >>> subprocess.run(f"onnxslim {f} {f} && open {f}", shell=True, check=True)  # pip install onnxslim
 """
 
+from ultralytics.nn.modules.SwinTransformer import SwinTransformer
+
 from .block import (
     C1,
     C2,
@@ -58,8 +60,8 @@ from .block import (
     RepVGGDW,
     ResNetLayer,
     SCDown,
-    TorchVision,
     SwinTransformer,  # Swin Transformer - Reny93
+    TorchVision,
 )
 from .conv import (
     CBAM,
@@ -102,8 +104,6 @@ from .transformer import (
     TransformerEncoderLayer,
     TransformerLayer,
 )
-
-from ultralytics.nn.modules.SwinTransformer import SwinTransformer
 
 __all__ = (
     "Conv",
