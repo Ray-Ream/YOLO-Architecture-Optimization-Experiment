@@ -10,10 +10,10 @@ import torch.nn.functional as F
 from ultralytics.utils.torch_utils import fuse_conv_and_bn
 
 from .conv import Conv, DWConv, GhostConv, LightConv, RepConv, autopad
-from .transformer import TransformerBlock
 
 # Add SwimTransformer import - Remy93
 from .SwinTransformer import SwinTransformer
+from .transformer import TransformerBlock
 
 __all__ = (
     "DFL",
