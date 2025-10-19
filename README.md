@@ -8,7 +8,7 @@
 5. Change the dataset root path in the yaml configuration file in the ultralytics/cfg/datasets/coco-pose directory.
 6. Run it! train/train_yolo_swinTransformer_backbone.py is the training code.
 
-
+---
 
 
 
