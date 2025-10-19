@@ -1,6 +1,10 @@
 # YOLO_Architecture
 
-**SwinTransformer Optimization**
+### **SwinTransformer Optimization**
+Here we use SwinTransformer to improve the YOLO architecture as an example.  
+Besides the SwinTransformer, we also have examples of architectural improvements to EfficientNetv2.  
+
+The Following Steps:  
 1. Added SwinTransformer architecture to the ultralytics/nn/modules directory.
 2. Import the required module packages in ultralytics/nn/modules/__init__.py.
 3. Update ultralytics/nn/tack.py to import the required packages and add the packages to the pares_model function in the script.
