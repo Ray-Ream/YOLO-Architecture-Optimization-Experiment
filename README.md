@@ -1,6 +1,6 @@
 # YOLO architecture optimization Experiment
 
----
+This project covers the use of many potential and innovative architectures to optimize the backbone, loss function and other parts of the YOLO model to improve the inference performance of the YOLO model.
 
 ## Table of contents
 - [Currently used architecture](#currently-used-architecture)
