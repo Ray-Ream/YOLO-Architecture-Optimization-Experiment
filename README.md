@@ -1,4 +1,18 @@
-# YOLO_Architecture
+# YOLO architecture optimization Experiment
+
+---
+
+## Table of contents
+- [Currently used architecture](#currently-used-architecture)
+- [SwinTransformer Optimization](#swinTransformer-optimization)
+
+---
+
+### **Currently used architecture**
+1. Swin Transformer. Link: https://arxiv.org/abs/2103.14030
+2. EfficientNetV2. Link: https://arxiv.org/abs/2104.00298
+
+---
 
 ### **SwinTransformer Optimization**
 Here we use SwinTransformer to improve the YOLO architecture as an example.  
