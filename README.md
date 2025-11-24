@@ -3,37 +3,34 @@
 This project covers the use of many potential and innovative architectures to optimize the backbone, loss function and other parts of the YOLO model to improve the inference performance of the YOLO model.
 
 ## Table of contents
+
 - [Currently used architecture](#currently-used-architecture)
 - [SwinTransformer Optimization](#swinTransformer-optimization)
 
 ---
 
 ### **Currently used architecture**
+
 1. Swin Transformer. Link: https://arxiv.org/abs/2103.14030
 2. EfficientNetV2. Link: https://arxiv.org/abs/2104.00298
 
 ---
 
 ### **SwinTransformer Optimization**
-Here we use SwinTransformer to improve the YOLO architecture as an example.  
-Besides the SwinTransformer, we also have examples of architectural improvements to EfficientNetv2.  
 
-The Following Steps:  
+Here we use SwinTransformer to improve the YOLO architecture as an example.  
+Besides the SwinTransformer, we also have examples of architectural improvements to EfficientNetv2.
+
+The Following Steps:
+
 1. Added SwinTransformer architecture to the ultralytics/nn/modules directory.
-2. Import the required module packages in ultralytics/nn/modules/__init__.py.
+2. Import the required module packages in ultralytics/nn/modules/**init**.py.
 3. Update ultralytics/nn/tack.py to import the required packages and add the packages to the pares_model function in the script.
 4. Added yolov8-pose-swimTransformer schema yaml in ultralytics/cfg/models/v8 directory.
 5. Change the dataset root path in the yaml configuration file in the ultralytics/cfg/datasets/coco-pose directory.
 6. Run it! train/train_yolo_swinTransformer_backbone.py is the training code.
 
 ---
-
-
-
-
-
-
-
 
 <div align="center">
   <p>
@@ -84,4 +81,3 @@ Request an Enterprise License for commercial use at [Ultralytics Licensing](http
   <img src="https://github.com/ultralytics/assets/raw/main/social/logo-transparent.png" width="2%" alt="space">
   <a href="https://discord.com/invite/ultralytics"><img src="https://github.com/ultralytics/assets/raw/main/social/logo-social-discord.png" width="2%" alt="Ultralytics Discord"></a>
 </div>
-
