@@ -21,7 +21,7 @@ Besides the SwinTransformer, we also have examples of architectural improvements
 The Following Steps:  
 1. Added SwinTransformer architecture to the ultralytics/nn/modules directory.
 2. Import the required module packages in ultralytics/nn/modules/__init__.py.
-3. Update ultralytics/nn/tack.py to import the required packages and add the packages to the pares_model function in the script.
+3. Update ultralytics/nn/tasks.py to import the required packages and add the packages to the pares_model function in the script.
 4. Added yolov8-pose-swimTransformer schema yaml in ultralytics/cfg/models/v8 directory.
 5. Change the dataset root path in the yaml configuration file in the ultralytics/cfg/datasets/coco-pose directory.
 6. Run it! train/train_yolo_swinTransformer_backbone.py is the training code.
