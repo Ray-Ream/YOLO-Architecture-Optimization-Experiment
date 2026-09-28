@@ -198,7 +198,7 @@ def try_export(inner_func):
             return f
         except Exception as e:
             LOGGER.error(f"{prefix} export failure {dt.t:.1f}s: {e}")
-            raise e
+            raise
 
     return outer_func
 
@@ -1078,8 +1078,10 @@ class Exporter:
             LOGGER.info(f"\n{prefix} export requires Edge TPU compiler. Attempting install from {help_url}")
             for c in (
                 "curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -",
-                'echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | '
-                "sudo tee /etc/apt/sources.list.d/coral-edgetpu.list",
+                (
+                    'echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | '
+                    "sudo tee /etc/apt/sources.list.d/coral-edgetpu.list"
+                ),
                 "sudo apt-get update",
                 "sudo apt-get install edgetpu-compiler",
             ):
@@ -1510,7 +1512,7 @@ class NMSModel(torch.nn.Module):
 
         preds = self.model(x)
         pred = preds[0] if isinstance(preds, tuple) else preds
-        kwargs = dict(device=pred.device, dtype=pred.dtype)
+        kwargs = {"device": pred.device, "dtype": pred.dtype}
         bs = pred.shape[0]
         pred = pred.transpose(-1, -2)  # shape(1,84,6300) to shape(1,6300,84)
         extra_shape = pred.shape[-1] - (4 + len(self.model.names))  # extras from Segment, OBB, Pose
