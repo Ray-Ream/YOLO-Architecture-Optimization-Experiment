@@ -5,9 +5,9 @@ from __future__ import annotations
 from typing import Any
 
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 from scipy.optimize import linear_sum_assignment
+from torch import nn
 
 from ultralytics.utils.metrics import bbox_iou
 from ultralytics.utils.ops import xywh2xyxy, xyxy2xywh
@@ -104,8 +104,8 @@ class HungarianMatcher(nn.Module):
         Returns:
             (list[tuple[torch.Tensor, torch.Tensor]]): A list of size batch_size, each element is a tuple (index_i,
                 index_j), where index_i is the tensor of indices of the selected predictions (in order) and index_j is
-                the tensor of indices of the corresponding selected ground truth targets (in order).
-                For each batch element, it holds: len(index_i) = len(index_j) = min(num_queries, num_target_boxes).
+                the tensor of indices of the corresponding selected ground truth targets (in order). For each batch
+                element, it holds: len(index_i) = len(index_j) = min(num_queries, num_target_boxes).
         """
         bs, nq, nc = pred_scores.shape
 
