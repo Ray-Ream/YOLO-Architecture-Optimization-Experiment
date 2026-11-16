@@ -679,8 +679,8 @@ class Model(torch.nn.Module):
         defaults, and any additional arguments provided.
 
         Args:
-            **kwargs (Any): Arbitrary keyword arguments to customize the export process. These are combined with
-                the model's overrides and method defaults. Common arguments include:
+            **kwargs (Any): Arbitrary keyword arguments to customize the export process. These are combined with the
+                model's overrides and method defaults. Common arguments include:
             format (str): Export format (e.g., 'onnx', 'engine', 'coreml').
             half (bool): Export model in half-precision.
             int8 (bool): Export model in int8 precision.
@@ -1004,7 +1004,7 @@ class Model(torch.nn.Module):
             >>> model.reset_callbacks()
             # All callbacks are now reset to their default functions
         """
-        for event in callbacks.default_callbacks.keys():
+        for event in callbacks.default_callbacks:
             self.callbacks[event] = [callbacks.default_callbacks[event][0]]
 
     @staticmethod
